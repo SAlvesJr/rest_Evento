@@ -59,7 +59,7 @@ public class EventoController {
 		}).orElse(ResponseEntity.notFound().build());
 	}
 	
-	@GetMapping(path = { "/ListInsc/{id}" })
+	@GetMapping(path = { "/{id}/listInsc" })
 	public ResponseEntity findByIsnc(@PathVariable long id) {
 		return repository.findById(id).map(record -> ResponseEntity.ok().body(record.getInscEvent()))
 				.orElse(ResponseEntity.notFound().build());

@@ -72,8 +72,16 @@ public class UsuarioController {
 	           }).orElse(ResponseEntity.notFound().build());
 	}
 	
+	@GetMapping(path = {"/{id}/listInsc"})
+	public ResponseEntity findByInsc(@PathVariable long id) {
+		return userRepository.findById(id).map(record ->{
+			return ResponseEntity.ok().body(record.getInscUser());
+		}).orElse(ResponseEntity.notFound().build());
+	}
+	
 	@PostMapping(value = "/inscricao")
 	public Inscricao createInsc(@RequestBody Inscricao insc) {
+		
 		eventRepository.findById(insc.getIdEvent())
 		.get().getInscEvent().addAll(Arrays.asList(insc));
 		
@@ -83,19 +91,11 @@ public class UsuarioController {
 		return inscRepository.save(insc);
 	}
 	
-	@GetMapping(path = {"/ListInsc/{id}"})
-	public ResponseEntity findByInsc(@PathVariable long id) {
-		return userRepository.findById(id).map(record ->{
-			return ResponseEntity.ok().body(record.getInscUser());
-		}).orElse(ResponseEntity.notFound().build());
-	} 
-	
-	@DeleteMapping(path = { "/{id}/delIsnc/{insc_id}" })
+	@DeleteMapping(path = { "/{id}/delInsc/{insc_id}" })
 	public ResponseEntity<?> deleteInsc(@PathVariable("id") long id, 
 			@PathVariable("insc_id") Long insc_id) {
 		return userRepository.findById(id).map(record -> {
 			record.getInscUser().removeIf( x -> (x.getId() == insc_id ));			
-			userRepository.save(record);
 			
 			eventRepository.findById( 
 			inscRepository.findById(insc_id).get()
