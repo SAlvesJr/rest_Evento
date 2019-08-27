@@ -1,11 +1,14 @@
 package com.SAlvesjr.rest_eventos.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Evento implements Serializable {
@@ -17,6 +20,8 @@ public class Evento implements Serializable {
 	private Long id;
 	private String nomeEvento;
 	private int vagas;
+	
+	private List<Inscricao> inscEvent = new ArrayList<>();
 
 	public Evento() {
 	}
@@ -49,6 +54,14 @@ public class Evento implements Serializable {
 
 	public void setVagas(int vagas) {
 		this.vagas = vagas;
+	}
+
+	public List<Inscricao> getInscEvent() {
+		return inscEvent;
+	}
+
+	public void setInscEvent(List<Inscricao> inscEvent) {
+		this.inscEvent = inscEvent;
 	}
 
 	@Override

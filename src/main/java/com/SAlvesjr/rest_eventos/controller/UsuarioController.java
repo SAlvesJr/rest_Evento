@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.SAlvesjr.rest_eventos.model.Usuario;
-import com.SAlvesjr.rest_eventos.repository.UsusarioRepository;
+import com.SAlvesjr.rest_eventos.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping({"/usuarios"})
 public class UsuarioController {
 	
-	private UsusarioRepository repository;
+	private UsuarioRepository repository;
 	
-	public UsuarioController(UsusarioRepository repository) {
+	public UsuarioController(UsuarioRepository repository) {
 		this.repository = repository;
 	}
 	
@@ -30,7 +30,7 @@ public class UsuarioController {
 		return repository.findAll();
 	}
 	
-	@GetMapping(path = {"/id"})
+	@GetMapping(path = {"/{id}"})
 	public ResponseEntity findById(@PathVariable long id) {
 		return repository.findById(id)
 				.map(record -> ResponseEntity.ok().body(record))
@@ -43,8 +43,7 @@ public class UsuarioController {
 	}
 	
 	@PutMapping(value="/{id}")
-	public ResponseEntity update(@PathVariable("id") long id,
-	                                      @RequestBody Usuario user) {
+	public ResponseEntity update(@PathVariable("id") long id, @RequestBody Usuario user) {
 	   return repository.findById(id)
 	           .map(record -> {
 	               record.setNome(user.getNome());
