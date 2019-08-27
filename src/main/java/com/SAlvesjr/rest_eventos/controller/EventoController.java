@@ -57,5 +57,11 @@ public class EventoController {
 			repository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}).orElse(ResponseEntity.notFound().build());
-	}	
+	}
+	
+	@GetMapping(path = { "/ListInsc/{id}" })
+	public ResponseEntity findByIsnc(@PathVariable long id) {
+		return repository.findById(id).map(record -> ResponseEntity.ok().body(record.getInscEvent()))
+				.orElse(ResponseEntity.notFound().build());
+	}
 }

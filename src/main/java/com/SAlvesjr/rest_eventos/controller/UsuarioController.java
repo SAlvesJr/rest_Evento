@@ -83,6 +83,13 @@ public class UsuarioController {
 		return inscRepository.save(insc);
 	}
 	
+	@GetMapping(path = {"/ListInsc/{id}"})
+	public ResponseEntity findByInsc(@PathVariable long id) {
+		return userRepository.findById(id).map(record ->{
+			return ResponseEntity.ok().body(record.getInscUser());
+		}).orElse(ResponseEntity.notFound().build());
+	} 
+	
 	@DeleteMapping(path = { "/{id}/delIsnc/{insc_id}" })
 	public ResponseEntity<?> deleteInsc(@PathVariable("id") long id, 
 			@PathVariable("insc_id") Long insc_id) {
