@@ -1,5 +1,6 @@
 package com.SAlvesjr.rest_eventos.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.SAlvesjr.rest_eventos.model.Evento;
 import com.SAlvesjr.rest_eventos.model.Inscricao;
 import com.SAlvesjr.rest_eventos.repository.EventoRepository;
 import com.SAlvesjr.rest_eventos.repository.InscricaoRepository;
@@ -41,13 +41,15 @@ public class InscricaoController {
 	}
 
 	@GetMapping(path = { "/{id}" })
-	public ResponseEntity findByEvent(@PathVariable long id) {
+	public ResponseEntity findByInsc(@PathVariable long id) {
 		return inscRepository.findById(id).map(record -> ResponseEntity.ok().body(record))
-				.orElse(ResponseEntity.notFound().build());
-	}
+				.orElse(ResponseEntity.notFound().build());		
+	} 
 
 	@PostMapping
 	public Inscricao create(@RequestBody Inscricao insc) {
+		eventRepository.findById(insc.getIdEvent()).get().getInscEvent().addAll(Arrays.asList(insc));
+		userRepository.findById(insc.getIdUser()).get().getInscUser().addAll(Arrays.asList(insc));
 		return inscRepository.save(insc);
 	}
 

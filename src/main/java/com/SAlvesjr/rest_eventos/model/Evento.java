@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class Evento implements Serializable {
@@ -20,6 +21,7 @@ public class Evento implements Serializable {
 	private String nomeEvento;
 	private int vagas;
 	
+	@ManyToMany
 	private List<Inscricao> inscEvent = new ArrayList<>();
 
 	public Evento() {

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.SAlvesjr.rest_eventos.model.Evento;
 import com.SAlvesjr.rest_eventos.repository.EventoRepository;
-import com.SAlvesjr.rest_eventos.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping({ "/eventos" })
