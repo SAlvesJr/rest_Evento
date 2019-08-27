@@ -1,6 +1,5 @@
 package com.SAlvesjr.rest_eventos.controller;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -23,11 +22,8 @@ public class EventoController {
 
 	private EventoRepository repository;
 
-	private UsuarioRepository userRepository;
-
-	public EventoController(EventoRepository eventos, UsuarioRepository userRepository) {
+	public EventoController(EventoRepository eventos) {
 		this.repository = eventos;
-		this.userRepository = userRepository;
 	}
 
 	@GetMapping
@@ -62,33 +58,5 @@ public class EventoController {
 			repository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}).orElse(ResponseEntity.notFound().build());
-	}
-
-	@GetMapping(path = { "/{id}/user" })
-	public ResponseEntity findByUserEvent(@PathVariable long id) {
-		return repository.findById(id).map(record -> {
-			return ResponseEntity.ok().body(record.getUsuario());
-		}).orElse(ResponseEntity.notFound().build());
-	}
-
-	@DeleteMapping(path = { "/{id}/removeUser/{user_id}" })
-	public ResponseEntity deleteUser(@PathVariable long id, @PathVariable long user_id) {
-		return repository.findById(id).map(record -> {
-			record.getUsuario().remove(0);
-			Evento updated = repository.save(record);
-			return ResponseEntity.ok().body(updated);
-		}).orElse(ResponseEntity.notFound().build());
-	}
-	
-	@PutMapping(value = "/{id}/addUser/{user_id}")
-	public ResponseEntity updateUserEvent(@PathVariable("id") long id, 
-			@PathVariable("user_id") long user_id,
-			@RequestBody Evento evento) {
-		return repository.findById(id).map(record -> {
-			record.getUsuario().addAll( Arrays.asList (userRepository.findById(user_id).get() ));
-			Evento updated = repository.save(record);
-			return ResponseEntity.ok().body(updated);
-		}).orElse(ResponseEntity.notFound().build());
-	}
-
+	}	
 }
