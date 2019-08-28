@@ -20,9 +20,9 @@ import com.SAlvesjr.rest_eventos.repository.InscricaoRepository;
 import com.SAlvesjr.rest_eventos.repository.UsuarioRepository;
 
 @RestController
-@RequestMapping({"/usuarios"})
+@RequestMapping({ "/usuarios" })
 public class UsuarioController {
-	
+
 	private InscricaoRepository inscRepository;
 
 	private EventoRepository eventRepository;
@@ -35,72 +35,71 @@ public class UsuarioController {
 		this.eventRepository = eventos;
 		this.userRepository = userRepository;
 	}
-	
+
 	@GetMapping
 	public List findAll() {
 		return userRepository.findAll();
 	}
-	
-	@GetMapping(path = {"/{id}"})
+
+	@GetMapping(path = { "/{id}" })
 	public ResponseEntity findById(@PathVariable long id) {
-		return userRepository.findById(id)
-				.map(record -> ResponseEntity.ok().body(record))
-				.orElse(ResponseEntity.notFound().build());
+		return userRepository.findById(id).map(record -> {
+			return ResponseEntity.ok().body(record);
+		}).orElse(ResponseEntity.notFound().build());
 	}
-	
+
 	@PostMapping
 	public Usuario create(@RequestBody Usuario user) {
 		return userRepository.save(user);
 	}
-	
-	@PutMapping(value="/{id}")
+
+	@PutMapping(value = "/{id}")
 	public ResponseEntity update(@PathVariable("id") long id, @RequestBody Usuario user) {
-	   return userRepository.findById(id)
-	           .map(record -> {
-	               record.setNome(user.getNome());
-	               Usuario updated = userRepository.save(record);
-	               return ResponseEntity.ok().body(updated);
-	           }).orElse(ResponseEntity.notFound().build());
+		return userRepository.findById(id).map(record -> {
+			record.setNome(user.getNome());
+			Usuario updated = userRepository.save(record);
+			return ResponseEntity.ok().body(updated);
+		}).orElse(ResponseEntity.notFound().build());
 	}
-	
-	@DeleteMapping(path ={"/{id}"})
+
+	@DeleteMapping(path = { "/{id}" })
 	public ResponseEntity<?> delete(@PathVariable long id) {
-	   return userRepository.findById(id)
-	           .map(record -> {
-	        	   userRepository.deleteById(id);
-	               return ResponseEntity.ok().build();
-	           }).orElse(ResponseEntity.notFound().build());
+		return userRepository.findById(id).map(record -> {
+			userRepository.deleteById(id);
+			return ResponseEntity.ok().build();
+		}).orElse(ResponseEntity.notFound().build());
 	}
-	
-	@GetMapping(path = {"/{id}/listInsc"})
+
+	@GetMapping(path = { "/{id}/listInsc" })
 	public ResponseEntity findByInsc(@PathVariable long id) {
-		return userRepository.findById(id).map(record ->{
+		return userRepository.findById(id).map(record -> {
 			return ResponseEntity.ok().body(record.getInscUser());
 		}).orElse(ResponseEntity.notFound().build());
 	}
-	
+
 	@PostMapping(value = "/inscricao")
-	public Inscricao createInsc(@RequestBody Inscricao insc) {
-		
-		eventRepository.findById(insc.getIdEvent())
-		.get().getInscEvent().addAll(Arrays.asList(insc));
-		
-		userRepository.findById(insc.getIdUser())
-		.get().getInscUser().addAll(Arrays.asList(insc));
-		
-		return inscRepository.save(insc);
+	public Usuario createInsc(@RequestBody Inscricao insc) {
+		long idEvent = insc.getIdEvent();
+		long idUser = insc.getIdUser();
+
+		eventRepository.findById(idEvent).get().getInscEvent().addAll(Arrays.asList(insc));
+
+		userRepository.findById(idUser).get().getInscUser().addAll(Arrays.asList(insc));
+
+		inscRepository.save(insc);
+
+		return userRepository.findById(idUser).get();
 	}
-	
+
 	@DeleteMapping(path = { "/{id}/delInsc/{insc_id}" })
-	public ResponseEntity<?> deleteInsc(@PathVariable("id") long id, 
-			@PathVariable("insc_id") Long insc_id) {
+	public ResponseEntity<?> deleteInsc(@PathVariable("id") long id, @PathVariable("insc_id") Long insc_id) {
 		return userRepository.findById(id).map(record -> {
-			record.getInscUser().removeIf( x -> (x.getId() == insc_id ));			
-			
-			eventRepository.findById( 
-			inscRepository.findById(insc_id).get()
-			.getIdEvent()).get().getInscEvent().removeIf(x -> (x.getId() == insc_id ));
-			
+			record.getInscUser().removeIf(x -> (x.getId() == insc_id));
+
+			long event_id = inscRepository.findById(insc_id).get().getIdEvent();
+
+			eventRepository.findById(event_id).get().getInscEvent().removeIf(x -> (x.getId() == insc_id));
+
 			inscRepository.deleteById(insc_id);
 			return ResponseEntity.ok().build();
 		}).orElse(ResponseEntity.notFound().build());

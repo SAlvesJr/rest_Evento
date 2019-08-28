@@ -9,18 +9,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Evento implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@Size(min = 3, max = 20)
 	private String nomeEvento;
-	private int vagas;
 	
+	private int vagas;
+
 	@ManyToMany
 	private List<Inscricao> inscEvent = new ArrayList<>();
 

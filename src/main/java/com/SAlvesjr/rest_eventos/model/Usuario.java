@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Usuario implements Serializable {
@@ -18,6 +19,7 @@ public class Usuario implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@Size(min = 3, max = 20)
 	private String nome;
 
 	@ManyToMany
