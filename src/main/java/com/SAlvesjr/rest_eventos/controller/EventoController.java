@@ -1,5 +1,6 @@
 package com.SAlvesjr.rest_eventos.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -14,54 +15,66 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.SAlvesjr.rest_eventos.model.Evento;
 import com.SAlvesjr.rest_eventos.repository.EventoRepository;
+import com.SAlvesjr.rest_eventos.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping({ "/eventos" })
 public class EventoController {
 
-	private EventoRepository repository;
+	private EventoRepository eventRepository;
 
-	public EventoController(EventoRepository eventos) {
-		this.repository = eventos;
+	private UsuarioRepository userRepository;
+
+	public EventoController(EventoRepository eventRepository, UsuarioRepository userRepository) {
+		this.eventRepository = eventRepository;
+		this.userRepository = userRepository;
 	}
 
 	@GetMapping
 	public List findAll() {
-		return repository.findAll();
+		return eventRepository.findAll();
 	}
 
 	@GetMapping(path = { "/{id}" })
 	public ResponseEntity findById(@PathVariable long id) {
-		return repository.findById(id).map(record -> ResponseEntity.ok().body(record))
+		return eventRepository.findById(id).map(record -> ResponseEntity.ok().body(record))
 				.orElse(ResponseEntity.notFound().build());
 	}
 
 	@PostMapping
 	public Evento create(@RequestBody Evento evento) {
-		return repository.save(evento);
+		return eventRepository.save(evento);
 	}
 
 	@PutMapping(value = "/{id}")
 	public ResponseEntity update(@PathVariable("id") long id, @RequestBody Evento evento) {
-		return repository.findById(id).map(record -> {
+		return eventRepository.findById(id).map(record -> {
 			record.setNomeEvento(evento.getNomeEvento());
 			record.setVagas(evento.getVagas());
-			Evento updated = repository.save(record);
+			Evento updated = eventRepository.save(record);
 			return ResponseEntity.ok().body(updated);
 		}).orElse(ResponseEntity.notFound().build());
 	}
 
 	@DeleteMapping(path = { "/{id}" })
 	public ResponseEntity<?> delete(@PathVariable long id) {
-		return repository.findById(id).map(record -> {
-			repository.deleteById(id);
+		return eventRepository.findById(id).map(record -> {
+			eventRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}).orElse(ResponseEntity.notFound().build());
 	}
-	
+
 	@GetMapping(path = { "/{id}/listInsc" })
-	public ResponseEntity findByIsnc(@PathVariable long id) {
-		return repository.findById(id).map(record -> ResponseEntity.ok().body(record.getInscEvent()))
-				.orElse(ResponseEntity.notFound().build());
+	public ResponseEntity<List<String>> findByIsnc(@PathVariable long id) {
+		return eventRepository.findById(id).map(record -> {
+			List<String> nameUserEvent = new ArrayList<>();
+
+			record.getInscEvent().forEach(insc -> {
+				nameUserEvent.add(userRepository.findById(insc.getIdUser()).get().getNome());
+			});
+
+			return ResponseEntity.ok().body(nameUserEvent);
+		}).orElse(ResponseEntity.notFound().build());
+
 	}
 }

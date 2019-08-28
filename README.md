@@ -11,13 +11,13 @@ As operações são feitas no pacote controller:
 EventoController realiza a criação de um evento, a rota utilizada é /eventos, usasse esta rota para fazer GET, PUT, POST e DELETE.
 
 #Listar os inscritos em um evento
-Para listagem dos usuários inscritos em evento, a rota /eventos/{id}/listInsc, retorna uma lista de inscrições feitas neste evento.
+Para listagem dos usuários inscritos em evento, a rota /eventos/{id}/listInsc, retorna uma lista de inscrições feitas neste evento, contendo os nomes dos usuarios na lista.
 
 # Realizar a criação de um usuário
 UserController realizar a criação de um usuário, a rota é /usuarios, usasse esta rota para fazer GET, PUT, POST e DELETE.
 
 # Listar as inscrições de um usuário
-Para listagem das inscrições feitas, a rota é /usuarios/{id}/listInsc, retorna uma lista de inscrições feitas pelo usuário.
+Para listagem das inscrições feitas, a rota é /usuarios/{id}/listInsc, retorna uma lista de inscrições feitas pelo usuário, contendo os nomes dos eventos na lista.
 
 # Realizar a operação de inscrição de um usuário em um evento
 A inscrição de um usuário em um evento é feitas na classe UserController, com a rota /usuarios/inscricao, com o método POST tendo no corpo da requisição

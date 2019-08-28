@@ -1,5 +1,6 @@
 package com.SAlvesjr.rest_eventos.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,10 +30,10 @@ public class UsuarioController {
 
 	private UsuarioRepository userRepository;
 
-	public UsuarioController(InscricaoRepository inscRepository, EventoRepository eventos,
+	public UsuarioController(InscricaoRepository inscRepository, EventoRepository eventRepository,
 			UsuarioRepository userRepository) {
 		this.inscRepository = inscRepository;
-		this.eventRepository = eventos;
+		this.eventRepository = eventRepository;
 		this.userRepository = userRepository;
 	}
 
@@ -71,9 +72,15 @@ public class UsuarioController {
 	}
 
 	@GetMapping(path = { "/{id}/listInsc" })
-	public ResponseEntity findByInsc(@PathVariable long id) {
+	public ResponseEntity<List<String>> findByInsc(@PathVariable long id) {
 		return userRepository.findById(id).map(record -> {
-			return ResponseEntity.ok().body(record.getInscUser());
+			List<String> nameEventUser = new ArrayList<>();
+
+			record.getInscUser().forEach(insc -> {
+				nameEventUser.add(eventRepository.findById(insc.getIdEvent()).get().getNomeEvento());
+			});
+
+			return ResponseEntity.ok().body(nameEventUser);
 		}).orElse(ResponseEntity.notFound().build());
 	}
 
