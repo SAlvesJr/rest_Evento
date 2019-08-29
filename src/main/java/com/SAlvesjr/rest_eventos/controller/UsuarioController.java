@@ -71,6 +71,10 @@ public class UsuarioController {
 	@DeleteMapping(path = { "/{id}" })
 	public ResponseEntity<?> delete(@PathVariable long id) {
 		return userRepository.findById(id).map(record -> {
+			record.getInscUser().forEach(insc_id -> {
+				eventRepository.findById(insc_id.getIdEvent()).get().getInscEvent().remove(insc_id);
+				inscRepository.deleteById(insc_id.getId());
+			});
 			userRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}).orElse(ResponseEntity.notFound().build());
@@ -102,6 +106,13 @@ public class UsuarioController {
 		if (!userRepository.findById(idUser).isPresent()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id do usuario não encontrado!");
 		}
+		
+		userRepository.findById(insc.getIdUser())
+		.get().getInscUser()
+		.forEach( id -> { 
+			if(id.getIdEvent().equals(insc.getIdEvent()))
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "usuario ja existe na lista deste evento!");
+		});
 
 		eventRepository.findById(idEvent).get().getInscEvent().addAll(Arrays.asList(insc));
 

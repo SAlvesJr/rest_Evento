@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.SAlvesjr.rest_eventos.model.Evento;
 import com.SAlvesjr.rest_eventos.repository.EventoRepository;
+import com.SAlvesjr.rest_eventos.repository.InscricaoRepository;
 import com.SAlvesjr.rest_eventos.repository.UsuarioRepository;
 
 @RestController
@@ -31,9 +32,13 @@ public class EventoController {
 
 	private UsuarioRepository userRepository;
 
-	public EventoController(EventoRepository eventRepository, UsuarioRepository userRepository) {
+	private InscricaoRepository inscRepository;
+
+	public EventoController(EventoRepository eventRepository, UsuarioRepository userRepository,
+			InscricaoRepository inscRepository) {
 		this.eventRepository = eventRepository;
 		this.userRepository = userRepository;
+		this.inscRepository = inscRepository;
 	}
 
 	@GetMapping
@@ -64,7 +69,12 @@ public class EventoController {
 
 	@DeleteMapping(path = { "/{id}" })
 	public ResponseEntity<?> delete(@PathVariable long id) {
-		return eventRepository.findById(id).map(record -> {
+		return eventRepository.findById(id).map(record -> {			
+			record.getInscEvent().forEach(insc_id -> {
+				userRepository.findById(insc_id.getIdUser()).get().getInscUser().remove(insc_id);
+				inscRepository.deleteById(insc_id.getId());
+			});	
+			
 			eventRepository.deleteById(id);
 			return ResponseEntity.ok().build();
 		}).orElse(ResponseEntity.notFound().build());
@@ -76,7 +86,7 @@ public class EventoController {
 			List<String> nameUserEvent = new ArrayList<>();
 
 			record.getInscEvent().forEach(insc -> {
-				nameUserEvent.add("nome usuario: "+ userRepository.findById(insc.getIdUser()).get().getNome());
+				nameUserEvent.add("nome usuario: " + userRepository.findById(insc.getIdUser()).get().getNome());
 			});
 
 			return ResponseEntity.ok().body(nameUserEvent);
