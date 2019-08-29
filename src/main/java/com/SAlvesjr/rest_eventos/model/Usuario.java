@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -17,9 +18,11 @@ public class Usuario implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)	
 	private Long id;
-	@Size(min = 3, max = 20)
+	
+	@Size(min = 3, max = 50 , message = "Nome deve contem 3 a 50 caracteries ")
+	@NotEmpty(message = "Nome não pode ser vazio")
 	private String nome;
 
 	@ManyToMany
@@ -55,5 +58,10 @@ public class Usuario implements Serializable {
 
 	public void setInscUser(List<Inscricao> inscUser) {
 		this.inscUser = inscUser;
+	}
+
+	@Override
+	public String toString() {
+		return "Usuario [id=" + id + ", nome=" + nome + "]";
 	}
 }

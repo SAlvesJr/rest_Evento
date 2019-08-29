@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.SAlvesjr.rest_eventos.model.Inscricao;
 import com.SAlvesjr.rest_eventos.model.Usuario;
@@ -50,12 +55,12 @@ public class UsuarioController {
 	}
 
 	@PostMapping
-	public Usuario create(@RequestBody Usuario user) {
+	public Usuario create(@Valid @RequestBody Usuario user) {
 		return userRepository.save(user);
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity update(@PathVariable("id") long id, @RequestBody Usuario user) {
+	public ResponseEntity update(@PathVariable("id") long id, @Valid @RequestBody Usuario user) {
 		return userRepository.findById(id).map(record -> {
 			record.setNome(user.getNome());
 			Usuario updated = userRepository.save(record);
@@ -77,7 +82,7 @@ public class UsuarioController {
 			List<String> nameEventUser = new ArrayList<>();
 
 			record.getInscUser().forEach(insc -> {
-				nameEventUser.add(eventRepository.findById(insc.getIdEvent()).get().getNomeEvento());
+				nameEventUser.add("nome evento: " + eventRepository.findById(insc.getIdEvent()).get().getNomeEvento());
 			});
 
 			return ResponseEntity.ok().body(nameEventUser);
@@ -85,9 +90,18 @@ public class UsuarioController {
 	}
 
 	@PostMapping(value = "/inscricao")
-	public Usuario createInsc(@RequestBody Inscricao insc) {
+	@ResponseStatus(HttpStatus.CREATED)
+	public Usuario createInsc(@Valid @RequestBody Inscricao insc) {
 		long idEvent = insc.getIdEvent();
 		long idUser = insc.getIdUser();
+
+		if (eventRepository.findById(idEvent).isPresent()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id do evento não encontrado!");
+		}
+
+		if (userRepository.findById(idUser).isPresent()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id do usuario não encontrado!");
+		}
 
 		eventRepository.findById(idEvent).get().getInscEvent().addAll(Arrays.asList(insc));
 
@@ -98,8 +112,8 @@ public class UsuarioController {
 		return userRepository.findById(idUser).get();
 	}
 
-	@DeleteMapping(path = { "/{id}/delInsc/{insc_id}" })
-	public ResponseEntity<?> deleteInsc(@PathVariable("id") long id, @PathVariable("insc_id") Long insc_id) {
+	@DeleteMapping(path = { "/{id}/delInsc/{insc_id}" })	
+	public ResponseEntity<?> deleteInsc(@PathVariable("id") long id, @PathVariable("insc_id") Long insc_id) {		
 		return userRepository.findById(id).map(record -> {
 			record.getInscUser().removeIf(x -> (x.getId() == insc_id));
 

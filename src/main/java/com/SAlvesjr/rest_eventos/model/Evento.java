@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -19,9 +21,12 @@ public class Evento implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@Size(min = 3, max = 20)
+
+	@Size(min = 3, max = 30)
+	@NotEmpty(message = "Nome não pode ser vazio")
 	private String nomeEvento;
-	
+
+	@Min(value = 1, message = "Vaga não pode ser menor do que 1")
 	private int vagas;
 
 	@ManyToMany
