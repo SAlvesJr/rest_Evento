@@ -95,11 +95,11 @@ public class UsuarioController {
 		long idEvent = insc.getIdEvent();
 		long idUser = insc.getIdUser();
 
-		if (eventRepository.findById(idEvent).isPresent()) {
+		if (!eventRepository.findById(idEvent).isPresent()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id do evento não encontrado!");
 		}
 
-		if (userRepository.findById(idUser).isPresent()) {
+		if (!userRepository.findById(idUser).isPresent()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id do usuario não encontrado!");
 		}
 
@@ -112,10 +112,14 @@ public class UsuarioController {
 		return userRepository.findById(idUser).get();
 	}
 
-	@DeleteMapping(path = { "/{id}/delInsc/{insc_id}" })	
-	public ResponseEntity<?> deleteInsc(@PathVariable("id") long id, @PathVariable("insc_id") Long insc_id) {		
+	@DeleteMapping(path = { "/{id}/delInsc/{insc_id}" })
+	public ResponseEntity<?> deleteInsc(@PathVariable("id") long id, @PathVariable("insc_id") Long insc_id) {
 		return userRepository.findById(id).map(record -> {
 			record.getInscUser().removeIf(x -> (x.getId() == insc_id));
+
+			if (!inscRepository.findById(insc_id).isPresent()) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id da inscricao não encontrado!");
+			}
 
 			long event_id = inscRepository.findById(insc_id).get().getIdEvent();
 
