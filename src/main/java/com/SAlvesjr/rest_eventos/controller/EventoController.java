@@ -71,7 +71,7 @@ public class EventoController {
 	public ResponseEntity<?> delete(@PathVariable long id) {
 		return eventRepository.findById(id).map(record -> {			
 			record.getInscEvent().forEach(insc_id -> {
-				userRepository.findById(insc_id.getIdUser()).get().getInscUser().remove(insc_id);
+				userRepository.findById(insc_id.getIdUser()).get().removeInscUser(insc_id);
 				inscRepository.deleteById(insc_id.getId());
 			});	
 			

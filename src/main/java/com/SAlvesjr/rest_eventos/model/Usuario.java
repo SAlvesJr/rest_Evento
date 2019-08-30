@@ -55,9 +55,13 @@ public class Usuario implements Serializable {
 	public List<Inscricao> getInscUser() {
 		return inscUser;
 	}
-
-	public void setInscUser(List<Inscricao> inscUser) {
-		this.inscUser = inscUser;
+	
+	public void addInscUser(Inscricao insc) {
+		inscUser.add(insc);
+	}
+	
+	public void removeInscUser(Inscricao insc) {
+		inscUser.remove(insc);
 	}
 
 	@Override

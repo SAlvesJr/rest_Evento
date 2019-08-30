@@ -68,10 +68,15 @@ public class Evento implements Serializable {
 	public List<Inscricao> getInscEvent() {
 		return inscEvent;
 	}
-
-	public void setInscEvent(List<Inscricao> inscEvent) {
-		this.inscEvent = inscEvent;
+	
+	public void addInscEvento(Inscricao insc) {
+		inscEvent.add(insc);
 	}
+	
+	public void removeInscEvento(Inscricao insc) {
+		inscEvent.remove(insc);
+	}
+	
 
 	@Override
 	public int hashCode() {

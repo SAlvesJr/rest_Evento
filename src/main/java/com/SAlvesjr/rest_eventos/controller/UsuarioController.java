@@ -72,7 +72,7 @@ public class UsuarioController {
 	public ResponseEntity<?> delete(@PathVariable long id) {
 		return userRepository.findById(id).map(record -> {
 			record.getInscUser().forEach(insc_id -> {
-				eventRepository.findById(insc_id.getIdEvent()).get().getInscEvent().remove(insc_id);
+				eventRepository.findById(insc_id.getIdEvent()).get().removeInscEvento(insc_id);
 				inscRepository.deleteById(insc_id.getId());
 			});
 			userRepository.deleteById(id);
@@ -113,10 +113,10 @@ public class UsuarioController {
 			if(id.getIdEvent().equals(insc.getIdEvent()))
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "usuario ja existe na lista deste evento!");
 		});
+		
+		eventRepository.findById(idEvent).get().addInscEvento(insc);
 
-		eventRepository.findById(idEvent).get().getInscEvent().addAll(Arrays.asList(insc));
-
-		userRepository.findById(idUser).get().getInscUser().addAll(Arrays.asList(insc));
+		userRepository.findById(idUser).get().addInscUser(insc);;
 
 		inscRepository.save(insc);
 
